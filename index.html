@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="theme-color" content="#714B67">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+<title>Timer Odoo</title>
+</head>
+<body>
+<div class="top">
+  <header>
+    <h1>⏱ Timer Odoo</h1>
+    <span id="badge" class="badge" hidden></span>
+    <button class="ib" id="rf" aria-label="Actualiser">⟳</button>
+    <button class="ib" id="cfgb" aria-label="Réglages">⚙</button>
+  </header>
+  <div class="sbar"><input id="q" type="search" placeholder="Filtrer tâches et tickets" autocomplete="off"></div>
+</div>
+<div id="st" class="st" hidden></div>
+<main id="list"></main>
+
+<div id="sheet" class="ov" hidden><div class="box">
+  <h2>Enregistrer le temps</h2>
+  <p id="sn" class="sn"></p>
+  <p id="sd" class="sd"></p>
+  <textarea id="cm" rows="3" placeholder="Commentaire (optionnel)"></textarea>
+  <div class="acts">
+    <button id="back" class="m sec">Retour</button>
+    <button id="drop" class="m dng">Abandonner</button>
+    <button id="ok" class="m pri">Enregistrer</button>
+  </div>
+</div></div>
+
+<div id="settings" class="ov" hidden><div class="box">
+  <h2>Connexion Odoo</h2>
+  <label>URL Odoo (https)<input id="fu" type="url" autocomplete="off" placeholder="https://votre-odoo.exemple"></label>
+  <label>Base de données<input id="fd" type="text" autocomplete="off" autocapitalize="none"></label>
+  <label>Identifiant<input id="fl" type="text" autocomplete="off" autocapitalize="none"></label>
+  <label>Clé API<input id="fk" type="password" autocomplete="off"></label>
+  <p id="cs" class="cs"></p>
+  <div class="acts">
+    <button id="wipe" class="m dng">Effacer les données</button>
+    <button id="cls" class="m sec">Fermer</button>
+    <button id="sv" class="m pri">Tester et enregistrer</button>
+  </div>
+</div></div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
