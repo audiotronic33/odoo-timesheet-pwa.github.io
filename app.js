@@ -44,9 +44,14 @@ function setSt(msg, err) {
 // --- API Odoo (JSON-RPC, clé API, sans cookies) ---
 async function rpc(base, params) {
   const r = await fetch(base + "/jsonrpc", {
-    method: "POST", credentials: "omit", referrerPolicy: "no-referrer",
+    method: "POST", credentials: "include", referrerPolicy: "no-referrer",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", method: "call", id: Date.now(), params })
+    body: JSON.stringify({ jsonrpc: "2.0", method: "call", id: Math.floor(Math.random() * 1000000), params: {
+            service: "common",
+            method: "authenticate",
+            args: [db, login, password, {}]
+        },
+    })
   });
   if (!r.ok) throw new Error("Requête HTTP échouée (" + r.status + ")");
   const d = await r.json();
