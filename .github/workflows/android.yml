@@ -1,0 +1,69 @@
+name: Build APK
+
+# Lancement manuel : onglet Actions > Build APK > Run workflow
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Dépendances (versions figées par package-lock.json)
+        run: npm ci --ignore-scripts
+
+      - name: Préparer les fichiers web
+        run: |
+          mkdir www
+          cp index.html app.js style.css manifest.webmanifest sw.js www/
+          cp -r icons www/
+
+      - name: Générer le projet Android
+        run: npx cap add android
+
+      - name: Durcir et personnaliser
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          # Pas de sauvegarde cloud : la clé API ne doit pas quitter le téléphone
+          sed -i 's/android:allowBackup="true"/android:allowBackup="false"/' "$M"
+          grep -q 'android:allowBackup="false"' "$M"
+          # Icône de l'app
+          cp -r android-res/* android/app/src/main/res/
+          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml \
+                android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+
+      - name: Compiler (release, non débogable)
+        working-directory: android
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Aligner et signer
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          PW=$(openssl rand -hex 16)
+          keytool -genkeypair -keystore ci.jks -alias timer -keyalg RSA -keysize 2048 \
+            -validity 10000 -storepass "$PW" -keypass "$PW" -dname "CN=Timer Odoo"
+          "$BT/zipalign" -p -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
+          "$BT/apksigner" sign --ks ci.jks --ks-pass "pass:$PW" --out Timer-Odoo.apk aligned.apk
+          "$BT/apksigner" verify Timer-Odoo.apk
+          rm -f ci.jks
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: timer-odoo-apk
+          path: Timer-Odoo.apk
+          retention-days: 30
