@@ -1,0 +1,8 @@
+{
+  "appId": "io.github.audiotronic33.timerodoo",
+  "appName": "Timer Odoo",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "android": { "allowMixedContent": false, "webContentsDebuggingEnabled": false },
+  "plugins": { "CapacitorHttp": { "enabled": true } }
+}
